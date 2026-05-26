@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HANAKO NANA — STELLIVE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ══ 메인 화면 ══ -->
+  <div id="main-screen">
+    <main class="hero">
+      <div class="hero-title-block">
+        <div class="hero-title-main">HANAKO NANA</div>
+        <div class="hero-subtitle-agent">{ AGENT }</div>
+      </div>
+      <div class="action-hub">
+        <button class="hub-btn btn-game" id="btn-game"><span class="btn-label">사격하기</span></button>
+        <button class="hub-btn btn-market" id="btn-market"><span class="btn-label">요원 상점</span></button>
+        <button class="hub-btn btn-stat" id="btn-stat"><span class="btn-label">요원 강화</span></button>
+      </div>
+    </main>
+  </div>
+
+  <!-- ══ 게임 화면 ══ -->
+  <div id="game-screen" class="hidden">
+
+    <!-- HUD 상단 -->
+    <div id="game-hud">
+      <button id="btn-back">← 나가기</button>
+      <div class="ghud-center"><span class="ghud-label">HANAKO / SPECIAL OPS</span></div>
+      <div class="ghud-right" id="hdr-fps">-- FPS</div>
+    </div>
+
+    <!-- 점수 -->
+    <div id="score-display" class="game-ui-el">SCORE 0</div>
+
+    <!-- 탄수 -->
+    <div id="ammo-display" class="game-ui-el ammo">15 / 15</div>
+
+    <!-- 장전 표시 -->
+    <div id="reload-indicator">
+      <div class="reload-label">RELOADING</div>
+      <div class="reload-track"><div id="reload-bar"></div></div>
+    </div>
+
+    <!-- 조준선 -->
+    <div id="crosshair">
+      <div class="ch-line ch-t"></div><div class="ch-line ch-b"></div>
+      <div class="ch-line ch-l"></div><div class="ch-line ch-r"></div>
+      <div class="ch-dot"></div>
+    </div>
+
+    <div id="aim-overlay"></div>
+    <canvas id="c"></canvas>
+
+    <!-- 카운트다운 -->
+    <div id="countdown-overlay">
+      <div class="cd-num">3</div>
+    </div>
+
+    <div id="error-banner"><strong>⚠ 모델 로드 실패</strong><span id="error-msg"></span></div>
+
+    <!-- 스킬 쿨타임 HUD -->
+    <div id="skill-hud" class="hidden">
+      <div class="skill-slot" id="slot-triple-a">
+        <span class="skill-key">A</span>
+        <div class="skill-cd-ring"><div id="cd-triple-a" class="skill-cd-fill"></div></div>
+        <span class="skill-name">AAA</span>
+      </div>
+      <div class="skill-slot" id="slot-cliche">
+        <span class="skill-key">1</span>
+        <div class="skill-cd-ring"><div id="cd-cliche" class="skill-cd-fill"></div></div>
+        <span class="skill-name">클리셰</span>
+      </div>
+    </div>
+    <div class="game-hint">우클릭 꾹 = 조준 후 좌클릭 = 발사 &nbsp;|&nbsp; A = 자동에임 &nbsp;|&nbsp; 1 = 클리셰</div>
+  </div>
+
+  <!-- ══ 요원마켓 화면 ══ -->
+  <div id="market-screen" class="hidden sub-screen">
+    <button class="back-btn" id="btn-market-back">← 홈</button>
+    <h2>요원마켓 <span>AGENT MARKET</span></h2>
+    <p class="coming">준비 중입니다 — COMING SOON</p>
+  </div>
+
+  <!-- ══ 요원 강화 화면 ══ -->
+  <div id="stat-screen" class="hidden">
+    <button class="back-btn" id="btn-stat-back">← 홈</button>
+
+    <!-- 상단 헤더 -->
+    <div class="stat-header">
+      <div class="stat-header-title">AGENT UPGRADE</div>
+      <div class="stat-header-sub">HANAKO NANA — SPECIAL OPS</div>
+      <div class="stat-point-display">
+        <span class="stat-point-label">STAT POINT</span>
+        <strong id="stat-point-value">0</strong>
+      </div>
+    </div>
+
+    <!-- 카드 5개 가로 배치 -->
+    <div class="enhance-cards-row">
+
+      <!-- 장전 속도 강화 -->
+      <div class="v-card" data-skill="reload_speed">
+        <div class="v-card-top">
+          <div class="v-card-icon-wrap">
+            <svg class="v-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 24C8 15.163 15.163 8 24 8" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+              <path d="M40 24C40 32.837 32.837 40 24 40" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+              <polyline points="22,4 8,8 12,22" fill="currentColor"/>
+              <polyline points="26,44 40,40 36,26" fill="currentColor"/>
+              <line x1="24" y1="16" x2="24" y2="24" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+              <line x1="24" y1="24" x2="30" y2="28" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="v-card-name">장전 속도 강화</div>
+          <div class="v-card-desc" id="desc-reload_speed">장전 속도를 높여<br>빠르게 재장전합니다</div>
+          <div class="v-card-stat" id="stat-reload_speed">RELOAD -0.002s / LV</div>
+          <div class="v-card-levels">
+            <span class="level-dot" data-skill="reload_speed" data-lv="1"></span>
+            <span class="level-dot" data-skill="reload_speed" data-lv="2"></span>
+            <span class="level-dot" data-skill="reload_speed" data-lv="3"></span>
+          </div>
+        </div>
+        <div class="v-card-bottom">
+          <span class="v-card-cost" id="cost-reload_speed">2P</span>
+          <button class="v-card-btn" id="btn-reload_speed">강화</button>
+        </div>
+      </div>
+
+      <!-- 탄창 강화 -->
+      <div class="v-card" data-skill="magazine">
+        <div class="v-card-top">
+          <div class="v-card-icon-wrap">
+            <svg class="v-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="14" y="6" width="20" height="28" rx="3" stroke="currentColor" stroke-width="3"/>
+              <rect x="18" y="2" width="12" height="6" rx="1.5" stroke="currentColor" stroke-width="2.5"/>
+              <line x1="14" y1="18" x2="34" y2="18" stroke="currentColor" stroke-width="2.5"/>
+              <line x1="14" y1="24" x2="34" y2="24" stroke="currentColor" stroke-width="2.5"/>
+              <path d="M18 34 L18 44 L30 44 L30 34" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="v-card-name">탄창 강화</div>
+          <div class="v-card-desc" id="desc-magazine">탄창 용량을 늘려<br>더 많이 발사합니다</div>
+          <div class="v-card-stat" id="stat-magazine">AMMO +1발 / LV</div>
+          <div class="v-card-levels">
+            <span class="level-dot" data-skill="magazine" data-lv="1"></span>
+            <span class="level-dot" data-skill="magazine" data-lv="2"></span>
+            <span class="level-dot" data-skill="magazine" data-lv="3"></span>
+          </div>
+        </div>
+        <div class="v-card-bottom">
+          <span class="v-card-cost" id="cost-magazine">5P</span>
+          <button class="v-card-btn" id="btn-magazine">강화</button>
+        </div>
+      </div>
+
+      <!-- 발사 속도 강화 -->
+      <div class="v-card" data-skill="fire_rate">
+        <div class="v-card-top">
+          <div class="v-card-icon-wrap">
+            <svg class="v-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 28 L18 28 L18 22 L28 22 L28 28 L36 28 L42 24 L36 20 L28 20 L28 26" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+              <rect x="8" y="28" width="22" height="10" rx="2" stroke="currentColor" stroke-width="3"/>
+              <path d="M24 22 L24 14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M30 24 L36 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="v-card-name">발사 속도 강화</div>
+          <div class="v-card-desc" id="desc-fire_rate">발사 쿨다운을 줄여<br>연사력을 높입니다</div>
+          <div class="v-card-stat" id="stat-fire_rate">FIRE -0.002s / LV</div>
+          <div class="v-card-levels">
+            <span class="level-dot" data-skill="fire_rate" data-lv="1"></span>
+            <span class="level-dot" data-skill="fire_rate" data-lv="2"></span>
+            <span class="level-dot" data-skill="fire_rate" data-lv="3"></span>
+          </div>
+        </div>
+        <div class="v-card-bottom">
+          <span class="v-card-cost" id="cost-fire_rate">3P</span>
+          <button class="v-card-btn" id="btn-fire_rate">강화</button>
+        </div>
+      </div>
+
+      <!-- 트리플A 건전지 (스페셜) -->
+      <div class="v-card v-card-special" data-skill="triple_a">
+        <div class="v-card-top">
+          <div class="v-card-icon-wrap">
+            <svg class="v-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- 건전지 3개 -->
+              <rect x="4"  y="12" width="12" height="24" rx="2.5" stroke="currentColor" stroke-width="2.5"/>
+              <rect x="18" y="12" width="12" height="24" rx="2.5" stroke="currentColor" stroke-width="2.5"/>
+              <rect x="32" y="12" width="12" height="24" rx="2.5" stroke="currentColor" stroke-width="2.5"/>
+              <rect x="6"  y="9" width="8" height="4" rx="1" fill="currentColor"/>
+              <rect x="20" y="9" width="8" height="4" rx="1" fill="currentColor"/>
+              <rect x="34" y="9" width="8" height="4" rx="1" fill="currentColor"/>
+              <path d="M10 22 L10 26" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M24 20 L24 28" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M38 22 L38 26" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="v-card-name">트리플A 건전지</div>
+          <div class="v-card-desc" id="desc-triple_a">A키 사용<br>5초 자동 에임</div>
+          <div class="v-card-stat" id="stat-triple_a">쿨타임 25초</div>
+          <div class="v-card-levels">
+            <span class="level-dot single" data-skill="triple_a" data-lv="1"></span>
+          </div>
+        </div>
+        <div class="v-card-bottom">
+          <span class="v-card-cost" id="cost-triple_a">30P</span>
+          <button class="v-card-btn" id="btn-triple_a">해금</button>
+        </div>
+      </div>
+
+      <!-- 클리셰 (스페셜) -->
+      <div class="v-card v-card-special" data-skill="cliche">
+        <div class="v-card-top">
+          <div class="v-card-icon-wrap">
+            <svg class="v-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- 토끼 얼굴 -->
+              <circle cx="24" cy="28" r="13" stroke="currentColor" stroke-width="3"/>
+              <!-- 귀 왼쪽 -->
+              <ellipse cx="16" cy="12" rx="4.5" ry="9" stroke="currentColor" stroke-width="2.5"/>
+              <!-- 귀 오른쪽 -->
+              <ellipse cx="32" cy="12" rx="4.5" ry="9" stroke="currentColor" stroke-width="2.5"/>
+              <!-- 눈 -->
+              <circle cx="19" cy="27" r="2" fill="currentColor"/>
+              <circle cx="29" cy="27" r="2" fill="currentColor"/>
+              <!-- 코 -->
+              <path d="M22 32 Q24 34 26 32" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="v-card-name">클리셰</div>
+          <div class="v-card-desc" id="desc-cliche">1키 사용<br>10초간 노란 블록 3개 생성</div>
+          <div class="v-card-stat" id="stat-cliche">블록 파괴 시 코인 +10</div>
+          <div class="v-card-levels">
+            <span class="level-dot single" data-skill="cliche" data-lv="1"></span>
+          </div>
+        </div>
+        <div class="v-card-bottom">
+          <span class="v-card-cost" id="cost-cliche">55P</span>
+          <button class="v-card-btn" id="btn-cliche">해금</button>
+        </div>
+      </div>
+
+    </div><!-- /.enhance-cards-row -->
+
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three":          "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+      "three/addons/":  "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="main.js"></script>
+</body>
+</html>
